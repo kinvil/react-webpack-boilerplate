@@ -8,14 +8,20 @@ module.exports = {
         bundle: [
             'webpack-hot-middleware/client?reload=true',
             path.join(__dirname, 'src/app/index')
-        ]
+        ],
+        vendor:  ['react', 'react-dom']
     },
     output: {
         path: path.join(__dirname, 'dist'),
-        filename: 'js/[name].js',
+        filename: '[name].js',
         publicPath: '/',
-        chunkFilename: 'js/[name].[chunkhash].js',
-        sourceMapFilename: 'map/[file].map'
+        chunkFilename: '[name].js'
+    },
+    module: {
+        loaders:[
+            { test: /\.sass$/, loader: ExtractTextPlugin.extract('style-loader', ['css-loader?minimize', 'sass-loader']) },
+            { test: /\.js[x]?$/, include: path.resolve(__dirname, 'src'), exclude: /node_modules/, loader: 'babel-loader' },
+        ]
     },
     plugins: [
         new webpack.optimize.OccurrenceOrderPlugin(),
@@ -23,21 +29,16 @@ module.exports = {
         new webpack.NoErrorsPlugin(),
         new webpack.optimize.CommonsChunkPlugin({
             name: 'vendor',
-            filename: 'js/[name].js'
+            filename: '[name].js',
+            minChunks: Infinity
         }),
-        new ExtractTextPlugin('css/main.css'),
+        new ExtractTextPlugin('main.css'),
         new webpack.DefinePlugin({
             'process.env': {
                 'NODE_ENV': JSON.stringify('development')
             }
         })
     ],
-    module: {
-        loaders:[
-            { test: /\.sass$/, loader: ExtractTextPlugin.extract('style-loader', ['css-loader?minimize', 'sass-loader']) },
-            { test: /\.js[x]?$/, include: path.resolve(__dirname, 'src'), exclude: /node_modules/, loader: 'babel-loader' },
-        ]
-    },
     resolve: {
         extensions: ['', '.js', '.jsx'],
     },
